@@ -189,7 +189,7 @@ y_linear_pred = linear_model.predict(X_test)
 r2_linear = r2_score(y_test, y_linear_pred)
 
 print("\nLinear Regression")
-print(f"Equation: y = {linear_model.intercept_:.2f} + {linear_model.coef_[0]:.2f}x")
+print(f"Equation: y = {linear_model.intercept_:.2f} + {linear_model.coef_[0]:.2f}xMarks")
 print(f"R² Score: {r2_linear:.4f}")
 
 # =========================
