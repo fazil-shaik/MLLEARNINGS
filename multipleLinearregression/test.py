@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
 import matplotlib.pyplot as plt
@@ -44,3 +45,13 @@ print(f"new value prediction is {new_value_prediction}")
 from sklearn.metrics import r2_score
 score = r2_score(y_test, y_prediction)
 print(f"\nModel Accuracy (R² Score): {score:.2f}")
+
+
+plt.figure()
+plt.scatter(y_test, y_prediction)
+plt.xlabel("Actual Price (lakhs)")
+plt.ylabel("Predicted Price (lakhs)")
+plt.title("Actual vs Predicted Prices")
+plt.plot([y_test.min(), y_test.max()],
+         [y_test.min(), y_test.max()])
+plt.show()
