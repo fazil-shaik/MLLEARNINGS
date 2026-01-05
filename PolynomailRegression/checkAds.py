@@ -4,8 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.metrics import r2_score, mean_squared_error
-
-
+import matplotlib.pyplot as plt
 data = {
     "AdSpend": [10, 20, 30, 40, 50, 60, 70, 80],
     "TVAds": [5, 7, 9, 12, 15, 18, 20, 22],
@@ -71,3 +70,58 @@ y_poly_pred = poly_model.predict(X_test_p)
 print("Polynomial Regression Results")
 print("R2 Score:", r2_score(y_test_p, y_poly_pred))
 print("MSE:", mean_squared_error(y_test_p, y_poly_pred))
+
+
+#linear regression predicted values using for loop
+for col in X.columns:
+    plt.figure(figsize=(7,5))
+
+    # Sort values for smooth line
+    X_sorted = df[[col]].sort_values(by=col)
+    y_sorted = y.loc[X_sorted.index]
+
+    # Create temp input keeping other features mean
+    X_temp = X.copy()
+    for other_col in X.columns:
+        if other_col != col:
+            X_temp[other_col] = X[other_col].mean()
+
+    X_temp[col] = X_sorted[col]
+
+    y_line = linear_model.predict(X_temp)
+
+    # Plot
+    plt.scatter(df[col], y, label="Actual Data")
+    plt.plot(X_sorted[col], y_line, linewidth=3, label="Predicted Line")
+
+    plt.xlabel(col)
+    plt.ylabel("Sales")
+    plt.title(f"Linear Regression: {col} vs Sales")
+    plt.legend()
+    plt.show()
+
+
+#polynomial regression using prediction curve
+for col in X.columns:
+    plt.figure(figsize=(7,5))
+
+    X_sorted = df[[col]].sort_values(by=col)
+    
+    X_temp = X.copy()
+    for other_col in X.columns:
+        if other_col != col:
+            X_temp[other_col] = X[other_col].mean()
+
+    X_temp[col] = X_sorted[col]
+
+    X_poly_temp = poly.transform(X_temp)
+    y_curve = poly_model.predict(X_poly_temp)
+
+    plt.scatter(df[col], y, label="Actual Data")
+    plt.plot(X_sorted[col], y_curve, linewidth=3, label="Predicted Curve")
+
+    plt.xlabel(col)
+    plt.ylabel("Sales")
+    plt.title(f"Polynomial Regression: {col} vs Sales")
+    plt.legend()
+    plt.show()
