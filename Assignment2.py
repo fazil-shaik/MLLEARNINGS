@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression,Ridge
+from sklearn.linear_model import LinearRegression,Ridge,ElasticNet,Lasso
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score,mean_squared_error
 from sklearn.preprocessing import StandardScaler
@@ -67,7 +67,6 @@ prediction = model.predict(new_data)
 print("Predicted Salary:", prediction[0])
 
 
-
 #Ridge regression model
 scaler = StandardScaler()
 X_train = scaler.fit_transform(X_train)
@@ -88,3 +87,33 @@ plt.xlabel("Actual Salary")
 plt.ylabel("Predicted Salary")
 plt.title("Ridge Regression: Actual vs Predicted")
 plt.show()
+
+# Lasso regression model
+lasso_model = Lasso(alpha=0.1)
+lasso_model.fit(X_train, y_train)
+
+y_pred_lasso = lasso_model.predict(X_test)
+
+plt.figure()
+plt.scatter(y_test, y_pred_lasso)
+plt.xlabel("Actual Salary")
+plt.ylabel("Predicted Salary")
+plt.title("Lasso Regression: Actual vs Predicted")
+plt.show()
+
+print(f"mse for Lasso is {mean_squared_error(y_pred_lasso, y_test)}")
+
+# Elastic Net regression model
+elastic_model = ElasticNet(alpha=0.1, l1_ratio=0.5)
+elastic_model.fit(X_train, y_train)
+
+y_pred_elastic = elastic_model.predict(X_test)
+
+plt.figure()
+plt.scatter(y_test, y_pred_elastic)
+plt.xlabel("Actual Salary")
+plt.ylabel("Predicted Salary")
+plt.title("Elastic Net Regression: Actual vs Predicted")
+plt.show()
+
+print(f"mse for Elastic Net is {mean_squared_error(y_pred_elastic, y_test)}")
