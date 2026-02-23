@@ -134,3 +134,104 @@ plt.title('Polynomial Regression: Actual vs Predicted')
 plt.legend()
 plt.show()
 
+#ridge regression
+
+from sklearn.linear_model import Ridge
+
+np.random.seed(42)
+
+
+X = np.random.rand(300,3) * 10
+y = 2*X[:,0]+ 3*X[:,1]+ 4*X[:,2] + np.random.randn(300) * 10
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+#model selection
+RidgeModel = Ridge(alpha=5)
+RidgeModel.fit(X_train,y_train)
+
+#Model prediction
+y_ridge_pred = RidgeModel.predict(X_test)
+
+print(f"Ridge Regression Mean Squared Error: {mean_squared_error(y_test,y_ridge_pred)}" )
+print(f"Ridge Regression R-squared Score: {r2_score(y_test,y_ridge_pred)}" )
+print(f"Ridge Regression Coefficients: {RidgeModel.coef_}")
+print(f"Ridge Regression Intercept: {RidgeModel.intercept_}")
+
+
+#model plotting
+plt.figure()
+plt.scatter(y_test,y_ridge_pred,label='predicted vs actual')
+plt.plot([y_test.min(),y_test.max()],[y_test.min(),y_test.max()],'r--',label='ideal fit')
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Ridge Regression: Actual vs Predicted')
+plt.legend()
+plt.show()  
+
+
+
+#lasso regression
+from sklearn.linear_model import Lasso
+
+np.random.seed(42)
+
+X = np.random.rand(300,3) * 10
+y = 2*X[:,0]+ 3*X[:,1]+ 4*X[:,2] + np.random.randn(300) * 10
+
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+#model selection
+
+LassoModel = Lasso(alpha=0.1)
+LassoModel.fit(X_train,y_train)
+
+#model prediction
+y_lasso_pred = LassoModel.predict(X_test)
+
+print(f"Lasso Regression Mean Squared Error: {mean_squared_error(y_test,y_lasso_pred)}" )
+print(f"Lasso Regression R-squared Score: {r2_score(y_test,y_lasso_pred)}" )
+print(f"Lasso Regression Coefficients: {LassoModel.coef_}")
+print(f"Lasso Regression Intercept: {LassoModel.intercept_}")
+
+#model plotting
+plt.figure()
+plt.scatter(y_test,y_lasso_pred,label='predicted vs actual')
+plt.plot([y_test.min(),y_test.max()],[y_test.min(),y_test.max()],'r--',label='ideal fit')
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Lasso Regression: Actual vs Predicted')
+plt.legend()
+plt.show()
+
+#elastic net regression
+from sklearn.linear_model import ElasticNet
+
+np.random.seed(42)
+
+X = np.random.rand(300,3) * 10
+y = 2*X[:,0]+ 3*X[:,1]+ 4*  X[:,2] + np.random.randn(300) * 10
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+#model selection
+ElasticNetModel = ElasticNet(alpha=0.1,l1_ratio=0.5)
+ElasticNetModel.fit(X_train,y_train)
+#model prediction
+y_elastic_pred = ElasticNetModel.predict(X_test)
+print(f"Elastic Net Regression Mean Squared Error: {mean_squared_error(y_test,y_elastic_pred)}" )
+print(f"Elastic Net Regression R-squared Score: {r2_score(y_test,y_elastic_pred)}" )
+print(f"Elastic Net Regression Coefficients: {ElasticNetModel.coef_}")
+print(f"Elastic Net Regression Intercept: {ElasticNetModel.intercept_}")
+
+#model plotting
+plt.figure()
+plt.scatter(y_test, y_elastic_pred, label='predicted vs actual')
+sorted_y_test = np.sort(y_test)
+plt.plot(sorted_y_test, sorted_y_test, 'r--', label='ideal fit')
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Elastic Net Regression: Actual vs Predicted')
+plt.legend()
+plt.show()
