@@ -71,7 +71,7 @@ np.random.seed(42)
 
 
 #sample data creation
-n_samples = 500
+n_samples = 800
 
 #note down features
 
@@ -118,9 +118,10 @@ print("Best R2:", grid.best_score_)
 
 #model training
 GradinetModel = GradientBoostingRegressor(
-    n_estimators=200,
-    learning_rate=0.5,
-    max_depth=3,
+    n_estimators=1200,
+    learning_rate=0.03,
+    subsample=0.8,
+    max_depth=5,
     random_state=42
 )
 GradinetModel.fit(X_train,y_train)
@@ -182,6 +183,12 @@ pred_cust_house = GradinetModel.predict(custome_house)
 fig,axes = plt.subplots(2,2,figsize=(14,10))
 fig.suptitle('Gradient regression booster')
 
+#residual plotting 
+residuals = y_test - y_prediction
+plt.scatter(y_prediction, residuals)
+plt.axhline(0, color='red')
+plt.title("Residual Plot")
+plt.show()
 
 #axes1-plotting actual vs predicted
 ax1 = axes[0,0]
