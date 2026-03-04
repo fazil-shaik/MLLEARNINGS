@@ -55,14 +55,7 @@
 
 
 
-
-
-
-
-
-
-
-
+from matplotlib import pyplot as plt
 import numpy as np
 import pandas as pd
 from sklearn.svm import SVR
@@ -70,6 +63,7 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, r2_score,mean_squared_error
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV
 
 
 
@@ -77,7 +71,7 @@ np.random.seed(42)
 
 
 #sample data creation
-n_samples = 200
+n_samples = 500
 
 #note down features
 
@@ -101,6 +95,27 @@ feature_names = ['Area (sqft)','BedRooms','Age (yrs)']
 
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
 
+
+param_grid = {
+    'n_estimators': [300, 500, 800],
+    'learning_rate': [0.01, 0.03, 0.05],
+    'max_depth': [2, 3, 4],
+    'subsample': [0.8, 1.0]
+}
+
+grid = GridSearchCV(
+    GradientBoostingRegressor(random_state=42),
+    param_grid,
+    cv=5,
+    scoring='r2',
+    n_jobs=-1
+)
+
+grid.fit(X_train, y_train)
+
+print("Best Parameters:", grid.best_params_)
+print("Best R2:", grid.best_score_)
+
 #model training
 GradinetModel = GradientBoostingRegressor(
     n_estimators=200,
@@ -119,7 +134,7 @@ y_prediction = GradinetModel.predict(X_test)
 print("r2_score of  test model ",r2_score(y_prediction,y_test))
 
 #predictions
-print(f"ALl predictions {y_prediction}")
+# print(f"ALl predictions {y_prediction}")
 
 
 #compare single tree and decision regression
@@ -148,7 +163,84 @@ for i,y_pred_staged in enumerate(GradinetModel.staged_predict(X_train),1):
 for n in [1,5,10,30,50,100]:
     print(f" After the {n:>3} trees ----> test errors: {test_errprs[n-1]:.2f}")
 
-
 #feature importance what exactly matters
 importances_ = GradinetModel.feature_importances_
 print(importances_)
+
+
+for name, imp in sorted(zip(feature_names,importances_),key=lambda x:-x[1]):
+    bar = '|'*int(imp*50)
+    print(f"{name:<15}:{imp:.3f} {bar}")
+
+
+
+#custom predicitons
+custome_house = np.array([[2000,3,10]])
+pred_cust_house = GradinetModel.predict(custome_house)
+
+
+fig,axes = plt.subplots(2,2,figsize=(14,10))
+fig.suptitle('Gradient regression booster')
+
+
+#axes1-plotting actual vs predicted
+ax1 = axes[0,0]
+ax1.scatter(y_test,y_prediction,color='blue',edgecolor='white',alpha=0.6)
+min_val = min(min(y_test),min(y_prediction))
+max_val = max(max(y_test),max(y_prediction))
+ax1.plot([min_val,max_val],[min_val,max_val],'r--')
+ax1.set_title('Actual vs predicted Price')
+ax1.set_xlabel('Actual price')
+ax1.set_ylabel('Predicted price')
+ax1.legend()
+
+
+# AX2 - Feature Importance
+ax2 = axes[0,1]
+
+sorted_idx = np.argsort(importances_)
+ax2.barh(np.array(feature_names)[sorted_idx],
+         importances_[sorted_idx],
+         color='green')
+
+ax2.set_title("Feature Importance")
+ax2.set_xlabel("Importance Score")
+
+
+# AX3 - Learning Curve (Train vs Test MAE)
+ax3 = axes[1,0]
+
+train_errors = []
+test_errors = []
+
+for y_pred_train, y_pred_test in zip(
+        GradinetModel.staged_predict(X_train),
+        GradinetModel.staged_predict(X_test)):
+
+    train_errors.append(mean_absolute_error(y_train, y_pred_train))
+    test_errors.append(mean_absolute_error(y_test, y_pred_test))
+
+ax3.plot(train_errors, label='Train MAE', color='blue')
+ax3.plot(test_errors, label='Test MAE', color='red')
+
+ax3.set_title("Boosting Learning Curve")
+ax3.set_xlabel("Number of Trees")
+ax3.set_ylabel("MAE")
+ax3.legend()
+
+# AX4 - Model Comparison
+ax4 = axes[1,1]
+
+models = ['Decision Tree', 'Gradient Boosting']
+r2_scores = [tree_r2, r2_score(y_test, y_prediction)]
+
+ax4.bar(models, r2_scores, color=['orange','purple'])
+ax4.set_title("Model R² Comparison")
+ax4.set_ylabel("R² Score")
+ax4.set_ylim(0,1)
+
+for i, v in enumerate(r2_scores):
+    ax4.text(i, v + 0.02, f"{v:.2f}", ha='center')
+
+
+plt.show()
