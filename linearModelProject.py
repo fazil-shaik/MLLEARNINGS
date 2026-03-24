@@ -1,6 +1,10 @@
 import numpy as np
 import pandas as pd
- 
+from sklearn.metrics import r2_score,mean_squared_error
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression 
+import matplotlib.pyplot as plt
+
 
 np.random.seed(42)
 N = 1000  # number of tablet formulation experiments
@@ -78,10 +82,61 @@ df = pd.DataFrame({
 
 #features selection
 
-X = df.drop(['dissolution_rate_pct'],axis=0.5)
+X = df.drop(['dissolution_rate_pct'],axis=1)
 y = df['dissolution_rate_pct']
 
 print(X.shape,y.shape)
 
 
-#Linear model selection
+
+#Linear model Train_test split
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+#model selection
+LinearModel = LinearRegression()
+LinearModel.fit(X_train,y_train)
+
+
+print(f"Features model expects: {LinearModel.feature_names_in_}")
+print(f"Number of features: {LinearModel.n_features_in_}")
+#model predicting and evaluating
+y_linear_predict = LinearModel.predict(X_test)
+
+
+y_new_value = [[
+    14.608828078105926, 0.14827352111953057, 6.25306406910709,
+    179.4347280696552, 29.595528147195452, 2.9462289029595246,
+    30.0, 1.0577331515220063, 5.23648372767747, 109.84511559122716,
+    15.62575575911071, 0.6899690121417249,
+]]
+
+result_new_value = LinearModel.predict(y_new_value)
+
+print(f"new value prediction: {result_new_value}")
+
+#evaluation
+
+print(f"mse of linear model is {mean_squared_error(y_test,y_linear_predict)}")
+print(f"r2_score of linear model is {r2_score(y_test,y_linear_predict)}")
+
+
+plt.figure(figsize=(10,8))
+plt.scatter(y_test,y_linear_predict,label='Actual data vs predicted')
+plt.plot([y_test.min(),y_test.max()],[y_test.min(), y_test.max()], lw=2, label='Ideal fit (y=x)')
+plt.xlabel('Actual Values')
+plt.ylabel('Predicted Values')
+plt.title('Actual vs Predicted Values')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
+
+plt.figure(figsize=(10,8))
+plt.scatter(y_test,y_linear_predict,label='Actual vs predicted data')
+plt.plot(y_new_value,result_new_value,label='New value prediction',marker='*')
+plt.xlabel('Actual values')
+plt.ylabel('predicted values')
+plt.title('New value prediction are')
+plt.grid(True)
+plt.show()
