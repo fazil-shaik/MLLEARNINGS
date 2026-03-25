@@ -11,7 +11,7 @@ from sklearn.preprocessing import PolynomialFeatures, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import train_test_split, learning_curve
 from sklearn.metrics import r2_score, mean_squared_error
- 
+from sklearn.model_selection import cross_val_score
 
 
 
@@ -380,17 +380,53 @@ for deg in degrees:
  
 
  #ridge regression
+scaler = StandardScaler()
+X_train_s = scaler.fit_transform(X_train)
+X_test_s  = scaler.transform(X_test)
 
 RidgeModel = Ridge(alpha=0.2)
-RidgeModel.fit(X_train,y_train)
+RidgeModel.fit(X_train_s, y_train)          # ← fit on SCALED data
 
-y_ridge_predict = RidgeModel.predict(X_test)
+y_ridge_predict = RidgeModel.predict(X_test_s)  # ← predict on SCALED data
 
+train_r2 = r2_score(y_train, RidgeModel.predict(X_train_s))
+test_r2  = r2_score(y_test,  y_ridge_predict)
+gap      = train_r2 - test_r2
 
-print(f"r2_score of ridgemodel is {r2_score(y_test,y_ridge_predict)}")
+print(f"Train R²  : {train_r2:.4f}")
+print(f"Test  R²  : {test_r2:.4f}")
+print(f"Gap       : {gap:.4f}")
 
+if train_r2 < 0.7 and test_r2 < 0.7:
+    print("UNDERFITTING — both scores low, model too simple")
+elif gap > 0.1:
+    print("OVERFITTING  — train >> test, model memorised training data")
+else:
+    print("GOOD FIT     — train ≈ test, model generalises well")
 
 plt.figure(figsize=(10,8))
 plt.plot(y_ridge_predict,color='red',marker='o',label='Actual vs predicted')
 plt.show()
 
+
+cv_scores = cross_val_score(RidgeModel, X_train_s, y_train, cv=5, scoring='r2')
+
+print(f"CV R² scores : {cv_scores.round(4)}")
+print(f"CV Mean R²   : {cv_scores.mean():.4f}")
+print(f"CV Std R²    : {cv_scores.std():.4f}")
+print()
+
+if cv_scores.mean() < 0.7:
+    print("UNDERFITTING")
+elif cv_scores.std() > 0.1:
+    print("OVERFITTING — high variance across folds")
+else:
+    print("GOOD FIT")
+
+
+from sklearn.linear_model import RidgeCV
+
+ridge_cv = RidgeCV(alphas=[0.01, 0.1, 0.2, 1.0, 5.0, 10.0], cv=5)
+ridge_cv.fit(X_train_s, y_train)
+print(f"Best alpha : {ridge_cv.alpha_}")
+print(f"Test R²    : {r2_score(y_test, ridge_cv.predict(X_test_s)):.4f}")
