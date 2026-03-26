@@ -87,3 +87,5 @@ scores = cross_val_score(Ridge(alpha=1.0), X_scaled, y, cv=5, scoring='r2')
 print(f"CV R² scores : {scores}")
 print(f"Mean R²      : {scores.mean():.4f}")
 print(f"Std          : {scores.std():.4f}")
+
+
