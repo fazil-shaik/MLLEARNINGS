@@ -167,68 +167,178 @@
 
 
 
-#decision Tree regression
+# #decision Tree regression
 
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from sklearn.tree import DecisionTreeRegressor
+# from sklearn.model_selection import train_test_split
+# from sklearn.tree import plot_tree
+
+# np.random.seed(42)
+
+# n = 300
+
+# X1 = np.random.rand(n) * 10
+# X2 = np.random.rand(n) * 5
+# X3 = np.random.rand(n) * 7
+# X_noise1 = np.random.randn(n)
+# X_noise2 = np.random.randn(n)
+# X_noise3 = np.random.randn(n)
+# X = np.column_stack([X1, X2, X3,X_noise1, X_noise2,X_noise3])
+
+# y = 5000*X1 + 10000*(X2**2) - 1500*(X3**3) + np.random.randn(n)*10000
+
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# feature_names = ["Size", "Rooms", "distance","Noise1", "Noise2","Noise3"]
+
+# dt = DecisionTreeRegressor(max_depth=3,random_state=42)
+# dt.fit(X_train,y_train)
+
+# importance = dt.feature_importances_
+# print(importance)
+# plt.style.use('dark_background')
+
+# plot_tree(
+#     dt,feature_names=feature_names,rounded=True,max_depth=2
+# )
+
+# plt.show()
+
+# plt.style.use('dark_background')
+# plt.figure()
+# plt.bar(feature_names, importance)
+# plt.xlabel("Features")
+# plt.ylabel("Importance Score")
+# plt.title("Feature Importance - Decision Tree")
+# plt.show()
+
+
+
+# #histogram of feature importance
+# # indices = np.argsort(importance)[::-1]
+
+# plt.style.use('dark_background')
+# plt.figure(figsize=(10,5))
+# plt.bar(feature_names, importance, color='#4fc3f7')
+# plt.xlabel("Features", color='white')
+# plt.ylabel("Importance Score", color='white')
+# plt.title("Feature Importance - Decision Tree", color='white')
+# plt.xticks(rotation=45, color='white')
+# plt.yticks(color='white')
+# plt.grid(True, alpha=0.2)
+# plt.tight_layout()
+# plt.show()
+
+
+
+
+#logistic regression
+
+
+from sklearn.linear_model import LogisticRegression
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.tree import DecisionTreeRegressor
+import pandas as pd
+from sklearn.metrics import accuracy_score,r2_score,mean_squared_error
 from sklearn.model_selection import train_test_split
-from sklearn.tree import plot_tree
 
 np.random.seed(42)
+size = 300
 
-n = 300
+dataValues = {
+    'monthly_income_inr':np.random.randint(10000,30000,size=size),
+    'income_volatility':np.random.randint(2,12,size=size),
+    'loom_age_years':np.random.randint(10,20,size=size),
+    'children_in_school':np.random.randint(2,8,size=size),
+    'distance_to_city_km':np.random.randint(5,15,size=size),
+    'spouse_employed':np.random.uniform(0,1,size=size),
+    'will_abandon':np.random.uniform(0,1,size=size)
+}
 
-X1 = np.random.rand(n) * 10
-X2 = np.random.rand(n) * 5
-X3 = np.random.rand(n) * 7
-X_noise1 = np.random.randn(n)
-X_noise2 = np.random.randn(n)
-X_noise3 = np.random.randn(n)
-X = np.column_stack([X1, X2, X3,X_noise1, X_noise2,X_noise3])
 
-y = 5000*X1 + 10000*(X2**2) - 1500*(X3**3) + np.random.randn(n)*10000
+income = dataValues['monthly_income_inr']
+votality = dataValues['income_volatility']
+loom_age=dataValues['loom_age_years']
+children = dataValues['children_in_school']
+distance = dataValues['distance_to_city_km']
+spouse = dataValues['spouse_employed']
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+income_scaled = (income - income.mean()) / income.std()
 
-feature_names = ["Size", "Rooms", "distance","Noise1", "Noise2","Noise3"]
-
-dt = DecisionTreeRegressor(max_depth=3,random_state=42)
-dt.fit(X_train,y_train)
-
-importance = dt.feature_importances_
-print(importance)
-plt.style.use('dark_background')
-
-plot_tree(
-    dt,feature_names=feature_names,rounded=True,max_depth=2
+z = (
+    -0.0005*income
+    +0.12*votality
+    + 0.04   * loom_age       # older loom → more frustration
+    + 0.18   * children       # more kids in school → financial pressure
+    + 0.06   * distance      # closer to city → migration pull stronger
+    - 1.5    * spouse         # spouse earning → weaver feels safer staying
+    + 0.5 
 )
 
-plt.show()
+P = 1 / (1 + np.exp(-z))
+
+dataValues['will_abandon'] = np.random.binomial(1, P)
+
+
+print(P.min().round(2), P.max().round(2))
+
+
+df = pd.DataFrame(dataValues)
+
+
+X = df.drop(['will_abandon'],axis=1)
+y = df['will_abandon']
+
+print(P.min().round(2), P.max().round(2))
+print(pd.Series(dataValues['will_abandon']).value_counts())
+
+print('sizes are ',X.shape,y.shape)
+
+
+
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
+
+model=LogisticRegression(max_iter=1000)
+model.fit(X_train,y_train)
+
+y_predict = model.predict(X)
+
 
 plt.style.use('dark_background')
-plt.figure()
-plt.bar(feature_names, importance)
-plt.xlabel("Features")
-plt.ylabel("Importance Score")
-plt.title("Feature Importance - Decision Tree")
-plt.show()
-
-
-
-#histogram of feature importance
-# indices = np.argsort(importance)[::-1]
-
-plt.style.use('dark_background')
-plt.figure(figsize=(10,5))
-plt.bar(feature_names, importance, color='#4fc3f7')
-plt.xlabel("Features", color='white')
-plt.ylabel("Importance Score", color='white')
-plt.title("Feature Importance - Decision Tree", color='white')
-plt.xticks(rotation=45, color='white')
-plt.yticks(color='white')
+# Plot
+plt.figure(figsize=(12, 6))
+plt.scatter(X['monthly_income_inr'], y, color='red', label='Actual data')
+plt.scatter(X['monthly_income_inr'], P, color='blue', label='Predicted probability')
+plt.xlabel("Monthly Income (INR)")
+plt.ylabel("Will Abandon (1=Yes, 0=No)")
+plt.legend()
+plt.title("Logistic Regression: Probability of Abandonment vs Monthly Income")
 plt.grid(True, alpha=0.2)
-plt.tight_layout()
 plt.show()
 
+#actual vs predicted
+plt.figure(figsize=(12, 6))
+plt.scatter(y, y_predict, color='purple', label='Actual vs Predicted')
+plt.xlabel("Actual Will Abandon (1=Yes, 0=No)")
+plt.ylabel("Predicted Will Abandon (1=Yes, 0=No)")
+plt.title("Logistic Regression: Actual vs Predicted")
+plt.legend()    
+plt.grid(True, alpha=0.2)
+plt.show()
 
+#features importance
+fig,axes = plt.subplots(1,1,figsize=(10,5))
+axes.bar(X.columns, model.coef_[0], color='#4fc3f7')
+axes.set_xlabel("Features", color='white')
+axes.set_ylabel("Coefficient Value", color='white') 
+axes.set_title("Feature Coefficients - Logistic Regression", color='white')
+axes.tick_params(colors='white')
+axes.grid(True, alpha=0.2)
+plt.show()
+
+# print("=== What the model learned ===")
+for feat, coef in zip(X.columns, model.coef_[0]):
+    print(f"  {feat:20s} → coefficient: {coef:.4f}")
+print(f"  {'intercept':20s} → {model.intercept_[0]:.4f}")
