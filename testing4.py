@@ -202,3 +202,13 @@ plt.show()
 print(f"\nOptimal probability threshold: {thresholds[optimal_idx]:.2f}")
 print(f"  → At this threshold, F1 score = {f1_scores[optimal_idx]:.3f}")
 print(f"  → Precision = {precisions[optimal_idx]:.3f}, Recall = {recalls[optimal_idx]:.3f}")
+
+
+from sklearn.metrics import confusion_matrix
+import numpy as np
+
+y_actual = np.array([0, 0, 1, 1, 0, 1, 0, 0, 1, 0])  # 10 bottles
+y_pred =    np.array([0, 1, 1, 0, 0, 1, 0, 0, 0, 0])  # Model predictions
+
+cm = confusion_matrix(y_actual, y_pred)
+print(cm)
