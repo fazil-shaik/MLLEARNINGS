@@ -146,3 +146,59 @@ plt.tick_params(colors='white')
 plt.grid(True, alpha=0.2)
 
 plt.show()
+
+
+
+
+from sklearn.metrics import confusion_matrix
+
+cm = confusion_matrix(y_test, y_pred)
+tn, fp, fn, tp = cm.ravel()
+
+# Cost assumptions (in dollars)
+cost_false_positive = 0.50   # Extra inspection cost
+cost_false_negative = 15.00  # Customer complaint + spoiled beer
+
+total_cost = (fp * cost_false_positive) + (fn * cost_false_negative)
+savings_vs_random = total_cost - (len(y_test) * 0.10 * cost_false_negative)  # Assuming 10% baseline
+
+print("\n" + "="*50)
+print("BUSINESS IMPACT ANALYSIS")
+print("="*50)
+print(f"False Positives: {fp} bottles (unnecessary inspection cost: ${fp * cost_false_positive:.2f})")
+print(f"False Negatives: {fn} bottles (missed failures cost: ${fn * cost_false_negative:.2f})")
+print(f"Total Quality Cost: ${total_cost:.2f}")
+print(f"Estimated Savings vs Random Inspection: ${savings_vs_random:.2f}")
+
+# Precision-Recall tradeoff
+precisions = []
+recalls = []
+thresholds = np.arange(0.1, 0.95, 0.05)
+
+for thresh in thresholds:
+    y_pred_thresh = (y_proba >= thresh).astype(int)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred_thresh).ravel()
+    precisions.append(tp / (tp + fp) if (tp + fp) > 0 else 0)
+    recalls.append(tp / (tp + fn) if (tp + fn) > 0 else 0)
+
+plt.figure(figsize=(10, 6))
+plt.plot(thresholds, precisions, 'b-', label='Precision', linewidth=2)
+plt.plot(thresholds, recalls, 'r-', label='Recall', linewidth=2)
+plt.xlabel('Probability Threshold')
+plt.ylabel('Score')
+plt.title('Precision-Recall Tradeoff for Production Line')
+plt.grid(True, alpha=0.3)
+plt.legend()
+plt.axvline(x=0.5, color='gray', linestyle='--', label='Default Threshold (0.5)')
+
+# Find optimal threshold (maximize F1)
+f1_scores = 2 * (np.array(precisions) * np.array(recalls)) / (np.array(precisions) + np.array(recalls) + 1e-8)
+optimal_idx = np.argmax(f1_scores)
+plt.axvline(x=thresholds[optimal_idx], color='green', linestyle='--', 
+           label=f'Optimal Threshold ({thresholds[optimal_idx]:.2f})')
+plt.legend()
+plt.show()
+
+print(f"\nOptimal probability threshold: {thresholds[optimal_idx]:.2f}")
+print(f"  → At this threshold, F1 score = {f1_scores[optimal_idx]:.3f}")
+print(f"  → Precision = {precisions[optimal_idx]:.3f}, Recall = {recalls[optimal_idx]:.3f}")
