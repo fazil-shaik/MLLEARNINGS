@@ -58,8 +58,25 @@ print(f"Features: {list(X.columns)}")
 
 X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state=42)
 
-GradientModel = GradientBoostingClassifier(n_estimators=1500,learning_rate=0.05,max_depth=3,random_state=42)
+
+
+n_estimators=[50, 100, 200]
+learning_rate=[0.01, 0.02, 0.1]
+max_depth=[3, 5, 7]
+
+# for n in n_estimators:
+#     for lr in learning_rate:
+#         for md in max_depth:
+#             model = GradientBoostingClassifier(n_estimators=n, learning_rate=lr, max_depth=md, random_state=42)
+#             model.fit(X_train, y_train)
+#             y_pred = model.predict(X_test)
+#             acc = accuracy_score(y_test, y_pred)
+#             print(f"n_estimators={n}, learning_rate={lr}, max_depth={md} => Accuracy: {acc:.2%}")
+
+# GradientModel = GradientBoostingClassifier(n_estimators=n, learning_rate=lr, max_depth=md, random_state=42)
+GradientModel = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=7, random_state=42)
 GradientModel.fit(X_train,y_train)
+            
 
 y_prediction = GradientModel.predict(X_test)
 
@@ -95,3 +112,32 @@ axes[3].set_ylabel('Predicted Outbreak')
 axes[3].set_title('Actual vs Predicted Outbreak')
 plt.tight_layout()
 plt.show()
+#feature importance
+feature_importance = GradientModel.feature_importances_
+feature_names = X.columns
+importance_df = pd.DataFrame({'Feature': feature_names, 'Importance': feature_importance})
+importance_df = importance_df.sort_values(by='Importance', ascending=False)
+plt.figure(figsize=(10,6))
+sns.barplot(x='Importance', y='Feature', data=importance_df, palette='viridis')
+plt.title('Feature Importance from Gradient Boosting')
+plt.xlabel('Importance Score')
+plt.ylabel('Feature')
+plt.tight_layout()
+plt.show()
+#residual analysis
+residuals = y_test - y_prediction
+plt.figure(figsize=(10,6))
+sns.histplot(residuals,bins=20,kde=True,color='orange')
+plt.title('Residuals Distribution')
+plt.xlabel('Residuals (Actual - Predicted)')
+plt.ylabel('Frequency')
+plt.tight_layout()
+plt.show()
+#error analysis
+misclassified = X_test[y_test != y_prediction]
+print("\nMisclassified Samples:")
+print(misclassified)
+plt.figure(figsize=(10,6))
+sns.pairplot(misclassified, hue='outbreak', palette='Set1')
+plt.suptitle('Feature Distributions of Misclassified Samples', y=1.02)
+plt.show()  
