@@ -149,6 +149,19 @@ for i in range(1,context_size+1):
 
 
 
+import torch
+
+#using torch creating embeddings
+input_id = torch.tensor([2,3,5,1])
+output_dim = 3
+
+torch.manual_seed(143)
+embedding_layer = torch.nn.Embedding(vocab_size,output_dim)
+print(embedding_layer.weight)
+
+print(embedding_layer(torch.tensor(input_id)))
 
 
-#using torch
+
+#coding attention mechanisms
+
