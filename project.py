@@ -100,8 +100,78 @@ def fetch_tle(catnr:int)->dict | None:
 #Fetch the data and cache it locally
 
 #phase2:
+def fetch_all_tle(catalog_numbers: list[int]) -> dict:
+    print("Fetching TLE data for satellites...")
+    print("=" * 60)
+    tle_data = {}
+    fetched_any = False
+    for catnr in catalog_numbers:
+        satname = SATTELEITES.get(catnr, f"SAT-{catnr}")
+        print(f"\n Fetching {satname}  with (CATNR{catnr})...")
+        result = fetch_tle(catnr)
+        if result:
+            tle_data[str(catnr)] = result
+            fetched_any = True
+        else:
+            print(f"Failed to fetch TLE data for {satname} .")
+    
+    # save cached data to json file
+    if fetched_any:
+        DATA_DIR.mkdir(exist_ok=True)
+        with open(TLE_CACHE, "w") as f:
+            json.dump(tle_data, f, indent=2)
+        print(f"\n[TLE data] cached to {TLE_CACHE}")
+    
+    # fallback to cache if failed!
+    if not tle_data and TLE_CACHE.exists():
+        print("Loading cached TLE data from file...")
+        with open(TLE_CACHE) as f:
+            tle_data = json.load(f)
+        print(f"[ok] loaded TLE data {len(tle_data)} from cache")
+    
+    if not tle_data:
+        print("NO TLE data found!")
+        sys.exit(1)
+    
+    return tle_data
 
 
+# phase 2: Dataset generation!
+def generate_dataset(tle_entry: dict, num_samples: int = 10000) -> pd.DataFrame:
+    print("\n" + "=" * 60)
+    line1 = tle_entry["TLE_LINE1"]
+    line2 = tle_entry["TLE_LINE2"]
+    sat_name = tle_entry.get("OBJECT_NAME", "UNKNOWN")
 
-        
+    # parse the TLE data using sgp4
+    satellite_sgp4 = Satrec.twoline2rv(line1, line2)
+    # convert the lat and lon to ECEF coordinates using skyfield
+    ts = load.timescale()
+    satellite_sf = EarthSatellite(line1, line2, sat_name, ts)
+
+    # extract the orbital params from TLE
+    inclination = tle_entry.get("INCLINATION", satellite_sgp4.inclo * 180 / np.pi)
+    eccentricity = tle_entry.get("ECCENTRICITY", satellite_sgp4.ecco)
+    raan = tle_entry.get("RAAN", satellite_sgp4.nodeo * 180 / np.pi)
+    arg_perigee = tle_entry.get("ARG_OF_PERIGEE", satellite_sgp4.argpo * 180 / np.pi)
+    mean_motion = tle_entry.get("MEAN_MOTION", satellite_sgp4.no_kozai * 1440 / (2 * np.pi))
+    bstar = tle_entry.get("BSTAR", satellite_sgp4.bstar)
+    epoch_str = tle_entry.get("EPOCH", None)
+    
+    if epoch_str:
+        epoch_dt = datetime.fromisoformat(epoch_str.replace("Z", "+00:00"))
+        if epoch_dt.tzinfo is None:
+            epoch_dt = epoch_dt.replace(tzinfo=timezone.utc)
+    else:
+        year = satellite_sgp4.epochyr
+        if year < 57:
+            year += 2000
+        else:
+            year += 1900
+        epoch_dt = datetime(year, 1, 1, tzinfo=timezone.utc) + timedelta(days=satellite_sgp4.epochdays - 1)
+    
+    rows = []
+    # for i in range(num_samples):
+
+
 
