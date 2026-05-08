@@ -51,3 +51,47 @@ plt.ylabel('Petal Length')
 plt.title('K-Means Clustering on Iris Dataset')
 plt.legend()
 plt.show()
+
+#K-means clutsering 
+
+
+from sklearn.cluster import KMeans
+import numpy as np
+
+
+data = np.array([[20, 80], [25, 85], [30, 90], [100, 20], [110, 25], [120, 30]])
+
+kmeans = KMeans(n_clusters=2, random_state=0)
+kmeans.fit(data)
+print(kmeans.labels_)
+
+plt.scatter(data[:, 0], data[:, 1], c=kmeans.labels_, cmap='viridis', marker='o')
+plt.scatter(kmeans.cluster_centers_[:, 0], kmeans.cluster_centers_[:, 1], 
+            c='red', marker='x', s=200, label='Centroids')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('K-Means Clustering')
+plt.legend()
+plt.show()
+
+
+#Hirearchial ck=lustering
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage
+import matplotlib.pyplot as plt
+
+# Sample data
+data = [[1, 2], [2, 3], [8, 7], [8, 8], [25, 80]]
+
+# Create linkage matrix for dendrogram
+linkage_matrix = linkage(data, method='ward')
+
+# Plot dendrogram
+plt.figure(figsize=(10, 6))
+dendrogram(linkage_matrix)
+plt.title('Hierarchical Clustering Dendrogram')
+plt.show()
+
+# Apply clustering
+clustering = AgglomerativeClustering(n_clusters=3)
+clusters = clustering.fit_predict(data)
