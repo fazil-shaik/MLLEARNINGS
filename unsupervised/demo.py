@@ -116,3 +116,27 @@ plt.show()
 print("Cluster assignments:", clusters)
 print("Number of clusters:", len(set(clusters)) - (1 if -1 in clusters else 0))
 print("Number of noise points:", list(clusters).count(-1))
+
+
+
+
+#DBScan clsustering 
+from sklearn.cluster import DBSCAN
+import numpy as np
+
+data = np.array([[1, 2], [2, 2], [2, 3], [8, 7], [8, 8], [25, 80], [100, 100]])
+
+# Apply DBSCAN
+dbscan = DBSCAN(eps=3, min_samples=2)
+clusters = dbscan.fit_predict(data)
+
+print("Cluster assignments:", clusters)
+print("Number of clusters:", len(set(clusters)) - (1 if -1 in clusters else 0))
+print("Number of noise points:", list(clusters).count(-1))
+
+
+plt.scatter(data[:, 0], data[:, 1], c=clusters, cmap='viridis', marker='o')
+plt.xlabel('Feature 1')
+plt.ylabel('Feature 2')
+plt.title('DBSCAN Clustering')
+plt.show()
