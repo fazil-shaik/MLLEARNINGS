@@ -119,7 +119,6 @@ print("Number of noise points:", list(clusters).count(-1))
 
 
 
-
 #DBScan clsustering 
 from sklearn.cluster import DBSCAN
 import numpy as np
@@ -140,3 +139,74 @@ plt.xlabel('Feature 1')
 plt.ylabel('Feature 2')
 plt.title('DBSCAN Clustering')
 plt.show()
+
+
+
+
+#Association rules Appriori Algorithm
+from mlxtend.frequent_patterns import apriori, association_rules
+import pandas as pd
+
+# Sample transaction data
+transactions = [
+    ['bread', 'butter', 'jam'],
+    ['bread', 'butter'],
+    ['bread', 'jam'],
+    ['butter', 'jam'],
+    ['bread', 'butter', 'jam', 'milk'],
+    ['bread', 'milk'],
+    ['butter', 'milk']
+]
+
+# Convert to binary matrix
+from mlxtend.preprocessing import TransactionEncoder
+te = TransactionEncoder()
+te_ary = te.fit(transactions).transform(transactions)
+df = pd.DataFrame(te_ary, columns=te.columns_)
+
+# Find frequent itemsets
+frequent_itemsets = apriori(df, min_support=0.3, use_colnames=True)
+
+# Generate association rules
+rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
+print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+
+fig, ax = plt.subplots(0,3,figsize=(15,5))
+ax[0].scatter(rules['support'], rules['confidence'], alpha=0.5)
+ax[0].set_xlabel('Support')
+ax[0].set_ylabel('Confidence')
+ax[0].set_title('Support vs Confidence')
+ax[1].scatter(rules['support'], rules['lift'], alpha=0.5)
+ax[1].set_xlabel('Support')
+ax[1].set_ylabel('Lift')
+ax[1].set_title('Support vs Lift')
+ax[2].scatter(rules['confidence'], rules['lift'], alpha=0.5)
+ax[2].set_xlabel('Confidence')
+ax[2].set_ylabel('Lift')
+ax[2].set_title('Confidence vs Lift')
+plt.tight_layout()
+plt.show()
+
+
+
+# from sklearn.ensemble import IsolationForest
+# from sklearn.neighbors import LocalOutlierFactor
+# import numpy as np
+
+# # Sample data with outliers
+# np.random.seed(42)
+# normal_data = np.random.normal(0, 1, (100, 2))
+# outliers = np.random.uniform(-4, 4, (5, 2))
+# data = np.vstack([normal_data, outliers])
+
+# # Isolation Forest
+# iso_forest = IsolationForest(contamination=0.1, random_state=42)
+# outlier_labels = iso_forest.fit_predict(data)
+
+# print("Outlier detection results:")
+# print("Normal points:", np.sum(outlier_labels == 1))
+# print("Anomalies:", np.sum(outlier_labels == -1))
+
+# # Local Outlier Factor
+# lof = LocalOutlierFactor(n_neighbors=20, contamination=0.1)
+# outlier_labels_lof = lof.fit_predict(data)
