@@ -144,48 +144,48 @@ plt.show()
 
 
 #Association rules Appriori Algorithm
-from mlxtend.frequent_patterns import apriori, association_rules
-import pandas as pd
+# from mlxtend.frequent_patterns import apriori, association_rules
+# import pandas as pd
 
-# Sample transaction data
-transactions = [
-    ['bread', 'butter', 'jam'],
-    ['bread', 'butter'],
-    ['bread', 'jam'],
-    ['butter', 'jam'],
-    ['bread', 'butter', 'jam', 'milk'],
-    ['bread', 'milk'],
-    ['butter', 'milk']
-]
+# # Sample transaction data
+# transactions = [
+#     ['bread', 'butter', 'jam'],
+#     ['bread', 'butter'],
+#     ['bread', 'jam'],
+#     ['butter', 'jam'],
+#     ['bread', 'butter', 'jam', 'milk'],
+#     ['bread', 'milk'],
+#     ['butter', 'milk']
+# ]
 
 # Convert to binary matrix
-from mlxtend.preprocessing import TransactionEncoder
-te = TransactionEncoder()
-te_ary = te.fit(transactions).transform(transactions)
-df = pd.DataFrame(te_ary, columns=te.columns_)
+# from mlxtend.preprocessing import TransactionEncoder
+# te = TransactionEncoder()
+# te_ary = te.fit(transactions).transform(transactions)
+# df = pd.DataFrame(te_ary, columns=te.columns_)
 
-# Find frequent itemsets
-frequent_itemsets = apriori(df, min_support=0.3, use_colnames=True)
+# # Find frequent itemsets
+# frequent_itemsets = apriori(df, min_support=0.3, use_colnames=True)
 
-# Generate association rules
-rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
-print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
+# # Generate association rules
+# rules = association_rules(frequent_itemsets, metric="confidence", min_threshold=0.5)
+# print(rules[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
 
-fig, ax = plt.subplots(0,3,figsize=(15,5))
-ax[0].scatter(rules['support'], rules['confidence'], alpha=0.5)
-ax[0].set_xlabel('Support')
-ax[0].set_ylabel('Confidence')
-ax[0].set_title('Support vs Confidence')
-ax[1].scatter(rules['support'], rules['lift'], alpha=0.5)
-ax[1].set_xlabel('Support')
-ax[1].set_ylabel('Lift')
-ax[1].set_title('Support vs Lift')
-ax[2].scatter(rules['confidence'], rules['lift'], alpha=0.5)
-ax[2].set_xlabel('Confidence')
-ax[2].set_ylabel('Lift')
-ax[2].set_title('Confidence vs Lift')
-plt.tight_layout()
-plt.show()
+# fig, ax = plt.subplots(0,3,figsize=(15,5))
+# ax[0].scatter(rules['support'], rules['confidence'], alpha=0.5)
+# ax[0].set_xlabel('Support')
+# ax[0].set_ylabel('Confidence')
+# ax[0].set_title('Support vs Confidence')
+# ax[1].scatter(rules['support'], rules['lift'], alpha=0.5)
+# ax[1].set_xlabel('Support')
+# ax[1].set_ylabel('Lift')
+# ax[1].set_title('Support vs Lift')
+# ax[2].scatter(rules['confidence'], rules['lift'], alpha=0.5)
+# ax[2].set_xlabel('Confidence')
+# ax[2].set_ylabel('Lift')
+# ax[2].set_title('Confidence vs Lift')
+# plt.tight_layout()
+# plt.show()
 
 
 
@@ -210,3 +210,26 @@ plt.show()
 # # Local Outlier Factor
 # lof = LocalOutlierFactor(n_neighbors=20, contamination=0.1)
 # outlier_labels_lof = lof.fit_predict(data)
+
+#GMM
+from sklearn.mixture import GaussianMixture
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Generate sample data
+np.random.seed(42)
+data1 = np.random.normal([2, 2], [0.5, 0.5], (50, 2))
+data2 = np.random.normal([6, 6], [1, 1], (50, 2))
+data = np.vstack([data1, data2])
+
+# Apply GMM
+gmm = GaussianMixture(n_components=2, random_state=42)
+gmm.fit(data)
+
+# Get cluster assignments and probabilities
+cluster_labels = gmm.predict(data)
+probabilities = gmm.predict_proba(data)
+
+print("Cluster means:", gmm.means_)
+print("Cluster covariances:", gmm.covariances_)
+print("Sample probabilities:", probabilities[:5])
