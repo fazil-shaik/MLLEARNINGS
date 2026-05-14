@@ -233,3 +233,90 @@ probabilities = gmm.predict_proba(data)
 print("Cluster means:", gmm.means_)
 print("Cluster covariances:", gmm.covariances_)
 print("Sample probabilities:", probabilities[:5])
+
+
+#customer segmentation via K-means clustering
+
+import numpy as np
+from sklearn.cluster import KMeans
+from sklearn.decomposition import PCA
+from sklearn.ensemble import IsolationForest
+from sklearn.metrics import silhouette_score, davies_bouldin_score
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+ 
+print("\n" + "="*80)
+print("PROBLEM 1: Customer Segmentation via K-means")
+print("="*80)
+ 
+def segment_customers(df):
+    """
+    Segment customers based on RFM (Recency, Frequency, Monetary).
+    
+    Input:
+      df: DataFrame with columns [customer_id, purchase_amount, purchase_date]
+    
+    Output:
+      DataFrame with cluster assignments and business interpretation
+    """
+    # Calculate RFM metrics
+    now = pd.Timestamp.now()
+    
+    rfm = df.groupby('customer_id').agg({
+        'purchase_amount': ['sum', 'count', 'mean'],  # M (Monetary), F (Frequency), AOV
+        'purchase_date': lambda x: (now - x.max()).days  # R (Recency)
+    }).reset_index()
+    
+    rfm.columns = ['customer_id', 'total_spent', 'purchase_count', 'avg_order_value', 'days_since_purchase']
+    
+    # Select features and scale
+    features = ['days_since_purchase', 'purchase_count', 'total_spent']
+    X = rfm[features].values
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    
+    # Find optimal K using silhouette score
+    best_k = 2
+    best_score = -1
+    for k in range(2, 8):
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+        labels = kmeans.fit_predict(X_scaled)
+        score = silhouette_score(X_scaled, labels)
+        print(f"K={k}: Silhouette={score:.3f}")
+        if score > best_score:
+            best_score = score
+            best_k = k
+    
+    # Fit final model
+    kmeans = KMeans(n_clusters=best_k, random_state=42, n_init=10)
+    rfm['segment'] = kmeans.fit_predict(X_scaled)
+    
+    # Label segments by monetary value
+    segment_spending = rfm.groupby('segment')['total_spent'].mean().sort_values(ascending=False)
+    segment_map = {seg: f"Tier_{i+1}" for i, seg in enumerate(segment_spending.index)}
+    rfm['segment_name'] = rfm['segment'].map(segment_map)
+    
+    print(f"\n✓ Optimal K: {best_k} (Silhouette: {best_score:.3f})")
+    print(f"\nSegment breakdown:")
+    print(rfm.groupby('segment_name')[['total_spent', 'purchase_count', 'days_since_purchase']].agg({
+        'total_spent': ['count', 'mean'],
+        'purchase_count': 'mean',
+        'days_since_purchase': 'mean'
+    }).round(2))
+    
+    return rfm[['customer_id', 'segment_name', 'total_spent', 'purchase_count', 'days_since_purchase']]
+ 
+# Example usage
+np.random.seed(42)
+example_customers = pd.DataFrame({
+    'customer_id': range(1, 501),
+    'purchase_amount': np.random.lognormal(5, 1.5, 500),  # Realistic spend distribution
+    'purchase_date': pd.date_range('2023-01-01', periods=500, freq='2h')
+})
+# Duplicate some customers
+example_customers = pd.concat([example_customers, example_customers.sample(200)])
+ 
+segmented = segment_customers(example_customers.reset_index(drop=True))
+print("\nSample segmented customers:")
+print(segmented.head(10))
+ 
