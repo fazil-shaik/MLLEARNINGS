@@ -169,3 +169,14 @@ def plot_rewards(rewards):
 
 
 plot_rewards(rewards_all_episodes)
+
+plt.figure(figsize=(10, 5))
+plt.plot(rewards_all_episodes)
+plt.title('Total Rewards per Episode')  
+plt.xlabel('Episode')
+plt.ylabel('Total Reward')
+plt.grid(True)
+plt.show()  
+
+
+
