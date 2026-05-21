@@ -118,4 +118,5 @@ plt.show()
 
 print(f"mse for Elastic Net is {mean_squared_error(y_pred_elastic, y_test)}")
 
-# demo
+
+"demonstrating the use of regularization techniques in regression models to prevent overfitting and improve generalization performance."
