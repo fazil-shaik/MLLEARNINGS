@@ -117,3 +117,5 @@ plt.title("Elastic Net Regression: Actual vs Predicted")
 plt.show()
 
 print(f"mse for Elastic Net is {mean_squared_error(y_pred_elastic, y_test)}")
+
+# demo
