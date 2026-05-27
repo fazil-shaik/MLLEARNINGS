@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeRegressor, export_text
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error,r2_score
 from sklearn.tree import plot_tree
-from sklearn.linear_model import Lasso
+from sklearn.linear_model import Lasso,Ridge as ridge_regression
 
 np.random.seed(42)
 
@@ -128,8 +128,6 @@ print(f"r2_score of train_data {r2_score_train_lasso}")
 print(f"r2_score of test data {r2_score_test_lasso}")
 
 
-
-
 residuals_lasso = y_test-y_lasso_test_pred
 plt.scatter(y_lasso_test_pred,residuals_lasso)
 plt.axhline(y=0,color='black',linestyle='--')
@@ -139,3 +137,42 @@ plt.title('Residual Plot')
 plt.show()
 
 
+
+ridgeRegression = ridge_regression(
+    alpha=0.2,
+    max_iter=1000,
+    random_state=42
+)
+
+ridgeRegression.fit(X_train,y_train)
+
+
+y_ridge_predict = ridgeRegression.predict(X_test)
+
+y_ridge_train_pred = regressor.predict(X_train)
+y_ridge_test_pred = regressor.predict(X_test)
+
+r2_score_train_ridge = r2_score(y_train,y_ridge_train_pred)
+r2_score_test_ridge = r2_score(y_test,y_ridge_test_pred)
+
+print(f"MSE of train_data {mean_squared_error(y_train,y_ridge_train_pred)}")
+print(f"MSE of test data {mean_squared_error(y_test,y_ridge_test_pred)}")
+print(f"r2_score of train_data {r2_score_train_ridge}")
+print(f"r2_score of test data {r2_score_test_ridge}")
+
+
+residuals_ridge = y_test-y_ridge_test_pred
+plt.scatter(y_ridge_test_pred,residuals_ridge)
+plt.axhline(y=0,color='black',linestyle='--')
+plt.xlabel('Predicted Values')
+plt.ylabel('Residuals')     
+plt.title('Residual Plot')
+plt.show()
+
+#actual vs predicted rigre regression
+plt.scatter(y_test,y_ridge_test_pred,alpha=0.5)
+plt.plot([y_test.min(),y_test.max()],[y_test.min(),y_test.max()],'r--')
+plt.xlabel('Actual')
+plt.ylabel('Predicted')
+plt.title('Actual vs Predicted')
+plt.show()  
