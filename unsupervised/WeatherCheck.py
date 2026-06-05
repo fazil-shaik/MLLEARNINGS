@@ -66,3 +66,77 @@ print("Raw data (no labels):")
 print(df)
 
 
+# Features for clustering
+features = ['temperature', 'windspeed']
+X = df[features].values
+
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+inertias = []
+K_range = range(1, 8)
+for k in K_range:
+    kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+    kmeans.fit(X_scaled)
+    inertias.append(kmeans.inertia_)
+
+# Plot elbow curve
+plt.figure(figsize=(8, 4))
+plt.plot(K_range, inertias, 'bo-')
+plt.xlabel('Number of clusters (k)')
+plt.ylabel('Inertia')
+plt.title('Elbow Method for Optimal k')
+plt.show()
+
+
+# Analyze each cluster's average features
+cluster_summary = df.groupby('cluster').agg({
+    'temperature': ['mean', 'min', 'max'],
+    'windspeed': ['mean', 'min', 'max']
+}).round(1)
+
+print("\nCluster Characteristics:")
+print(cluster_summary)
+
+# Label based on temperature ranges and windspeed
+def label_cluster(row):
+    temp = row['temperature']
+    wind = row['windspeed']
+    
+    if temp > 28:
+        return "Hot & Humid" if wind < 4 else "Hot & Windy"
+    elif temp > 18:
+        return "Mild & Pleasant" if wind < 5 else "Breezy Mild"
+    else:
+        return "Cool & Calm" if wind < 3 else "Cold & Windy"
+
+# Apply domain-informed labeling
+df['weather_label'] = df.apply(label_cluster, axis=1)
+
+# Alternative: Rule-based labeling from cluster centers
+cluster_labels = {
+    0: " Tropical Hot",
+    1: " Temperate Mild", 
+    2: " Cool Temperate"
+}
+
+# More intelligent labeling based on cluster centroids
+cluster_centers = []
+for i in range(3):
+    mask = df['cluster'] == i
+    avg_temp = df[mask]['temperature'].mean()
+    avg_wind = df[mask]['windspeed'].mean()
+    
+    if avg_temp > 27:
+        label = "Hot Zone"
+    elif avg_temp > 15:
+        label = " Mild Zone"
+    else:
+        label = " Cool Zone"
+    
+    cluster_centers.append(label)
+
+df['final_label'] = df['cluster'].map({i: cluster_centers[i] for i in range(3)})
+
+print("\n FINAL LABELED DATA:")
+print(df[['city', 'temperature', 'windspeed', 'final_label']].sort_values('final_label'))
