@@ -320,3 +320,26 @@ segmented = segment_customers(example_customers.reset_index(drop=True))
 print("\nSample segmented customers:")
 print(segmented.head(10))
  
+
+
+from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.datasets import load_iris
+import numpy as np
+
+data = load_iris()
+X, y = data.data, data.target
+
+# Step 1: Standardize
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 2: Apply PCA
+pca = PCA(n_components=2)  # reduce to 2D
+X_pca = pca.fit_transform(X_scaled)
+
+# Explained variance
+print("Explained variance ratio:", pca.explained_variance_ratio_)
+print("Total variance kept:", np.sum(pca.explained_variance_ratio_))
+
+# Output: typically 0.96 (96% variance kept in 2 dimensions from 4 original features)
