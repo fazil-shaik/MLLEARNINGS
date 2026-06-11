@@ -82,3 +82,17 @@ results_knn = pd.DataFrame(classifier_knn.cv_results_)
 kNN_result = results_knn[['param_algorithm','param_p','mean_test_score']]
 
 print(kNN_result)
+
+
+from sklearn.model_selection import RandomizedSearchCV
+
+random_classifier = RandomizedSearchCV((model_svc),
+    {
+    'C':[1,3,5,9,11,14],
+    'kernel':['linear','rbf'],  
+},cv=5,return_train_score=False,n_iter=7)
+random_classifier.fit(X=X,y=y)
+
+random_results = pd.DataFrame(random_classifier.cv_results_)
+
+print(random_results[['param_C','param_kernel','mean_test_score']])
