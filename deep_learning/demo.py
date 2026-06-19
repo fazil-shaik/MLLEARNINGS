@@ -54,6 +54,10 @@ history = model.fit(
 
 print(history.history)
 print("Training complete.")
+print("Evaluating on training data...")
+train_loss, train_acc = model.evaluate(X_train.values, y_train.values)
+print(f"Training Loss: {train_loss:.4f}, Training Accuracy: {train_acc:.4f}")
+
 print("Evaluating on test data...")
 test_loss, test_acc = model.evaluate(X_test.values, y_test.values)
 print(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_acc:.4f}")
