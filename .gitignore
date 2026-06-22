@@ -2,3 +2,4 @@ myenv
 __pycache__
 fazilsenv
 tf-env
+telco_churn.csv
