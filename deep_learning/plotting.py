@@ -3,19 +3,19 @@ import numpy as np
 from sklearn.neural_network import MLPRegressor
 
 
-X = [
+X = np.array([
  [0,0],
  [0,1],
  [1,0],
  [1,1]
-]
+])
 
-Y = [
+Y = np.array([
  [0],
  [1],
  [1],
  [0]
-]
+])
 
 W1 = 2
 W2 = 4
@@ -53,8 +53,8 @@ def relu(x):
     return np.maximum(0, x)
 
 def predict(X, W1, W2, b1, b2):
-    h1 = sigmoid(W1 * X + b1)
-    h2 = relu(W2 * h1 + b2)
+    h1 = sigmoid(X @ W1 + b1)
+    h2 = relu(h1 @ W2 + b2)
     return h2
 
 
