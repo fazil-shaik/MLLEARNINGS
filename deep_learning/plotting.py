@@ -67,24 +67,48 @@ print("actual prediction values is :",predict(X=[
  [2,2]
 ],W1=W1,W2=W2,b1=b1,b2=b2))
 
-x1_min, x1_max = -2.5, 2.5
-x2_min, x2_max = -2.5, 2.5
-xx1, xx2 = np.meshgrid(
-    np.arange(x1_min, x1_max, 0.02),
-    np.arange(x2_min, x2_max, 0.02)
-)
+# x1_min, x1_max = -2.5, 2.5
+# x2_min, x2_max = -2.5, 2.5
+# xx1, xx2 = np.meshgrid(
+#     np.arange(x1_min, x1_max, 0.02),
+#     np.arange(x2_min, x2_max, 0.02)
+# )
 
-Z = predict(np.c_[xx1.ravel(), xx2.ravel()], W1, W2, b1, b2).reshape(xx1.shape)
+# Z = predict(np.c_[xx1.ravel(), xx2.ravel()], W1, W2, b1, b2).reshape(xx1.shape)
 
-plt.contourf(xx1, xx2, Z, alpha=0.4, cmap=plt.cm.RdYlBu)
-plt.scatter(X[:, 0], X[:, 1], c=Y.flatten(), s=40, edgecolor='k', cmap=plt.cm.RdYlBu)
-plt.title("XOR function approximation")
-plt.xlabel("Input 1")
-plt.ylabel("Input 2")
-plt.show()
+# plt.contourf(xx1, xx2, Z, alpha=0.4, cmap=plt.cm.RdYlBu)
+# plt.scatter(X[:, 0], X[:, 1], c=Y.flatten(), s=40, edgecolor='k', cmap=plt.cm.RdYlBu)
+# plt.title("XOR function approximation")
+# plt.xlabel("Input 1")
+# plt.ylabel("Input 2")
+# plt.show()
+
+Z1 = np.dot(X, W1) + b1
+A1 = relu(Z1)
+
+# Output Layer
+Z2 = np.dot(A1, W2) + b2
+A2 = sigmoid(Z2)
+
+print("relu added function",A1)
+print("sigmoid added funciton",A2)
 
 
 
+def binary_cross_entropy(y_true, y_pred):
+    epsilon = 1e-15
+
+    # Prevent log(0)
+    y_pred = np.clip(y_pred, epsilon, 1 - epsilon)
+
+    loss = -np.mean(
+        y_true * np.log(y_pred) +
+        (1 - y_true) * np.log(1 - y_pred)
+    )
+
+    return loss
+
+print("BCE of the NEural network is: ",binary_cross_entropy(0.4,0.6))
 
 # Easy for quick plots
 # plt.figure(figsize=(10, 6))
