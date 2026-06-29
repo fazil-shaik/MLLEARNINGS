@@ -17,11 +17,11 @@ Y = np.array([
  [0]
 ])
 
-W1 = 2
-W2 = 4
+# W1 = 2
+# W2 = 4
 
-b1 = 4
-b2 = 2
+# b1 = 4
+# b2 = 2
 
 
 np.random.seed(42)
@@ -57,6 +57,15 @@ def predict(X, W1, W2, b1, b2):
     h2 = relu(h1 @ W2 + b2)
     return h2
 
+
+print("Sigmoid value is : ",sigmoid(2))
+print("Relu values of res is :",relu(2))
+print("actual prediction values is :",predict(X=[
+ [2,0],
+ [0,2],
+ [2,0],
+ [2,2]
+],W1=W1,W2=W2,b1=b1,b2=b2))
 
 x1_min, x1_max = -2.5, 2.5
 x2_min, x2_max = -2.5, 2.5
