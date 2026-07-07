@@ -87,4 +87,10 @@ plt.plot(history.history['accuracy'],label = "train Acc")
 plt.plot(history.history['val_accuracy'],label = "val Acc")
 
 
-     
+
+sample = np.array([[5.1, 3.5, 1.4, 1.2]])
+prediction = model.predict(sample)
+predicted_class = np.argmax(prediction)
+
+print("\nPredicted Probabilities (Softmax Output):", prediction)
+print("Predicted Class:", df.target_names[predicted_class])
