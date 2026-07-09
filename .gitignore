@@ -3,3 +3,5 @@ __pycache__
 fazilsenv
 tf-env
 telco_churn.csv
+mlartifacts/
+mlflow.db
