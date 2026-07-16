@@ -1,0 +1,5 @@
+Python is an amazing programming language.
+
+Machine learning helps computers learn from data.
+
+Small language models can generate text.
