@@ -1,0 +1,137 @@
+ Machine Learning Notes: Gradient Boosting
+=========================================
+
+1. Introduction
+---------------
+
+Gradient Boosting is an ensemble machine learning technique that combines
+multiple weak learners, usually decision trees, to create a strong predictive
+model. Each new model attempts to correct the mistakes made by the previous
+models.
+
+Gradient Boosting can be used for:
+
+- Regression problems
+- Classification problems
+- Ranking tasks
+
+Popular implementations include:
+
+- Gradient Boosting Machine (GBM)
+- XGBoost
+- LightGBM
+- CatBoost
+
+2. Basic Idea
+-------------
+
+The algorithm builds trees sequentially.
+
+Step 1:
+Train the first decision tree.
+
+Step 2:
+Compute the errors (residuals).
+
+Step 3:
+Train a new tree on those errors.
+
+Step 4:
+Add the predictions of the new tree to the previous predictions.
+
+Step 5:
+Repeat the process until the model performance becomes satisfactory.
+
+3. Mathematical Formula
+-----------------------
+
+Final prediction:
+
+F(x) = F0(x) + learning_rate * Tree1(x)
+                 + learning_rate * Tree2(x)
+                 + ...
+
+Residual:
+
+Residual = Actual Value - Predicted Value
+
+The model minimizes a loss function using gradient descent.
+
+4. Important Hyperparameters
+----------------------------
+
+1. n_estimators
+   Number of trees.
+
+2. learning_rate
+   Controls how much each tree contributes.
+
+3. max_depth
+   Maximum depth of each tree.
+
+4. min_samples_split
+   Minimum samples required to split a node.
+
+5. subsample
+   Fraction of training data used.
+
+5. Advantages
+-------------
+
+- High prediction accuracy.
+- Handles non-linear data.
+- Works for classification and regression.
+- Can handle missing values in some implementations.
+
+6. Disadvantages
+----------------
+
+- Training can be slow.
+- Sensitive to hyperparameter tuning.
+- Can overfit if too many trees are used.
+
+7. Simple Python Example
+------------------------
+
+from sklearn.ensemble import GradientBoostingClassifier
+
+model = GradientBoostingClassifier(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3
+)
+
+model.fit(X_train, y_train)
+
+predictions = model.predict(X_test)
+
+8. Difference Between Gradient Descent and Gradient Boosting
+------------------------------------------------------------
+
+Gradient Descent:
+- Optimization algorithm.
+- Updates model parameters.
+- Used in neural networks and linear regression.
+
+Gradient Boosting:
+- Ensemble learning algorithm.
+- Builds multiple decision trees.
+- Uses gradients to minimize loss.
+
+9. Real-World Applications
+--------------------------
+
+- Fraud detection
+- Customer churn prediction
+- Recommendation systems
+- Credit scoring
+- Medical diagnosis
+- Stock market analysis
+
+10. Summary
+-----------
+
+Gradient Boosting is one of the most powerful machine learning algorithms.
+It improves predictions by sequentially adding weak learners and minimizing
+errors using gradients. Libraries such as XGBoost, LightGBM, and CatBoost
+are widely used in industry.

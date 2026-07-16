@@ -5,3 +5,5 @@ tf-env
 telco_churn.csv
 mlartifacts/
 mlflow.db
+# .venv
+.env
