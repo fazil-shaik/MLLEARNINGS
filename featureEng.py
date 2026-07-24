@@ -108,12 +108,27 @@ df["Characters"] = df["Text"].str.len()
 print(df)
 
 
-#Log transformation
+# #Log transformation
 
-import numpy as np
+# import numpy as np
 
-df["Salary"] = np.log1p(df["Salary"])
+# df["Salary"] = np.log1p(df["Salary"])
 
-print("="*20)
+# print("="*20)
+
+# print(df)
+
+
+#binning
+
+df = pd.DataFrame({
+    "Age":[15,24,38,60]
+})
+
+bins = [0,18,40,100]
+
+labels = ["Child","Adult","Senior"]
+
+df["Group"] = pd.cut(df["Age"], bins=bins, labels=labels)
 
 print(df)
