@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import LabelEncoder,MinMaxScaler
 from sklearn.preprocessing import StandardScaler
 
 
@@ -50,3 +50,70 @@ print(df)
 
 
 #min max scaling:
+# formulae-(x-min)/(max-min)
+
+minmaxe = MinMaxScaler()
+df[['Salary']] = minmaxe.fit_transform(df[['Salary']])
+print("After Applying minmaxe Scaler : ")
+print("="*20)
+print(df)
+
+#feature creation
+
+# Suppose
+
+# Height = 170 cm
+
+# Weight = 70 kg
+
+# Create
+
+# BMI
+
+# Formula
+
+# BMI = weight/(height_in_meter)^2
+
+df = pd.DataFrame({
+    "Height":[170,160,180],
+    "Weight":[70,60,90]
+})
+
+df["BMI"] = df["Weight"] / ((df["Height"]/100)**2)
+print("="*20)
+print(df)
+
+
+# Text Feature Engineering
+# Suppose
+# "I love machine learning"
+# Useful features
+# Number of words
+# Number of characters
+# Average word length
+
+
+
+df = pd.DataFrame({
+    "Text":[
+        "I love AI",
+        "Machine Learning is awesome"
+    ]
+})
+
+df["Words"] = df["Text"].apply(lambda x: len(x.split()))
+
+df["Characters"] = df["Text"].str.len()
+
+print(df)
+
+
+#Log transformation
+
+import numpy as np
+
+df["Salary"] = np.log1p(df["Salary"])
+
+print("="*20)
+
+print(df)
