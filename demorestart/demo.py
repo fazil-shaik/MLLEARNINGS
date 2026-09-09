@@ -68,3 +68,12 @@ plt.xlabel("Actual Values")
 plt.ylabel("Predicted Values")
 plt.title("Actual vs Predicted Values") 
 plt.show()
+
+
+plt.figure(figsize=(10,6))
+sns.regplot(x=y_test, y=y_linear_predict, ci=None, color="b")
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Actual vs Predicted Values with Regression Line")
+plt.show()
+
