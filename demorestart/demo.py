@@ -77,3 +77,30 @@ plt.ylabel("Predicted Values")
 plt.title("Actual vs Predicted Values with Regression Line")
 plt.show()
 
+
+
+
+#multiple linear regression
+
+MultilayerModel = LinearRegression()
+MultilayerModel.fit(X_train,y_train)
+
+#model prediction and Values check
+y_multilayer_predict = MultilayerModel.predict(X_test)
+
+#model eval
+
+print("Intercept:", MultilayerModel.intercept_)
+print("Coefficients:", MultilayerModel.coef_)
+
+
+#plotting the results
+plt.figure(figsize=(10,6))
+plt.scatter(y_test,y_multilayer_predict)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max
+()], 'k--', lw=4)
+plt.xlabel("Actual Values")
+plt.ylabel("Predicted Values")
+plt.title("Actual vs Predicted Values for Multiple Linear Regression")
+plt.show()
+
