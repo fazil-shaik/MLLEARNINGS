@@ -7,3 +7,5 @@ mlartifacts/
 mlflow.db
 # .venv
 .env
+
+.venv
