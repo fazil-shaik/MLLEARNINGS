@@ -33,3 +33,31 @@
 # if __name__ == "__main__":
 #     app.run(debug=True)
 
+from src.config.db import db
+
+
+class User(db.Model):
+    __tablename__="profile"
+
+
+    id = db.Column(
+        db.INTEGER,
+        primary_key=True
+    )
+
+    name = db.Column(
+        db.String(100),
+        nullable=False
+    )
+
+    email = db.Column(
+        db.String(120),
+        unique=True,
+        nullable=False
+    )
+
+    password_hash = db.Column(
+        db.String(255),
+        nullable=False
+    )
+
