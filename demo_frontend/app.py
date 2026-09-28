@@ -90,3 +90,79 @@
 # #         st.success(
 # #             f"Predicted Marks: {prediction[0]:.2f}"
 # #         )
+
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.linear_model import LinearRegression
+
+
+st.title("Interactive Linear Regression")
+
+
+# Dataset
+data = pd.DataFrame({
+    "Hours": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "Marks": [35, 40, 45, 50, 55, 60, 65, 72, 78, 85]
+})
+
+
+# X and y
+X = data[["Hours"]]
+y = data["Marks"]
+
+
+# Train model
+model = LinearRegression()
+model.fit(X, y)
+
+
+# Slider
+hours = st.slider(
+    "Select hours studied",
+    min_value=1,
+    max_value=10,
+    value=5,
+    step=1
+)
+
+
+# Prediction
+prediction = model.predict([[hours]])[0]
+
+
+st.write(f"Hours: **{hours}**")
+st.write(f"Predicted Marks: **{prediction:.2f}**")
+
+
+# Regression line
+predictions = model.predict(X)
+
+fig, ax = plt.subplots()
+
+ax.scatter(
+    data["Hours"],
+    data["Marks"],
+    label="Actual Data"
+)
+
+ax.plot(
+    data["Hours"],
+    predictions,
+    label="Regression Line"
+)
+
+# Selected point
+ax.scatter(
+    hours,
+    prediction,
+    s=100,
+    label="Your Prediction"
+)
+
+ax.set_xlabel("Hours Studied")
+ax.set_ylabel("Marks")
+ax.legend()
+
+st.pyplot(fig)
