@@ -1,11 +1,13 @@
-# Python-generated files
-__pycache__/
-*.py[oc]
-build/
-dist/
-wheels/
-*.egg-info
+myenv
+__pycache__
+fazilsenv
+tf-env
+telco_churn.csv
+mlartifacts/
+mlflow.db
+# .venv
+.env
+data
 
-# Virtual environments
 .venv
 .env
