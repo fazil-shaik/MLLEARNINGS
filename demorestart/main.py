@@ -1,6 +1,6 @@
-#non linear models 
+# #non linear models 
 
-#Decision trees
+# #Decision trees
 
 
 import numpy as np
@@ -45,7 +45,7 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 
 
-#model training 
+# #model training 
 
 model = DecisionTreeRegressor(
     max_depth=10,
@@ -210,3 +210,185 @@ for depth in [2, 3, 5, 8, 10, 15, 20, None]:
 #     )
 
 
+#random forest
+
+from sklearn.ensemble import RandomForestRegressor
+
+
+
+model = RandomForestRegressor(
+    n_estimators=100,
+    oob_score=True,
+    random_state=42,
+    max_depth=10,
+    
+)
+
+model.fit(X_train,y_train)
+
+
+
+y_random_prediction = model.predict(X_test)
+
+
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
+
+import numpy as np
+
+mae = mean_absolute_error(
+    y_test,
+    y_random_prediction
+)
+
+mse = mean_squared_error(
+    y_test,
+    y_random_prediction
+)
+
+rmse = np.sqrt(mse)
+
+r2 = r2_score(
+    y_test,
+    y_random_prediction
+)
+
+print("MAE :", mae)
+print("MSE :", mse)
+print("RMSE:", rmse)
+print("R²  :", r2)
+
+
+
+train_pred_random = model.predict(X_train)
+test_pred_random = model.predict(X_test)
+
+train_r2 = r2_score(
+    y_train,
+    train_pred_random
+)
+
+test_r2 = r2_score(
+    y_test,
+    test_pred_random
+)
+
+print("Train R²:", train_r2)
+print("Test R² :", test_r2)
+print("Gap     :", train_r2 - test_r2)
+
+
+
+# for n in [1, 5, 10, 25, 50, 100, 200]:
+
+#     model = RandomForestRegressor(
+#         n_estimators=n,
+#         random_state=42
+#     )
+
+#     model.fit(X_train, y_train)
+
+#     train_r2 = r2_score(
+#         y_train,
+#         model.predict(X_train)
+#     )
+
+#     test_r2 = r2_score(
+#         y_test,
+#         model.predict(X_test)
+#     )
+
+#     print(
+#         f"Trees={n:3} | "
+#         f"Train R²={train_r2:.4f} | "
+#         f"Test R²={test_r2:.4f}"
+#     )
+
+
+print("="*50)
+print("OOB-checking")
+print("="*50)
+
+
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import r2_score
+
+model = RandomForestRegressor(
+    n_estimators=100,
+    random_state=42,
+    oob_score=True
+)
+
+model.fit(X_train, y_train)
+
+test_pred = model.predict(X_test)
+
+test_r2 = r2_score(
+    y_test,
+    test_pred
+)
+
+print("Test R²:", test_r2)
+print("OOB R² :", model.oob_score_)
+
+
+
+
+
+#gradient boosting
+
+
+from sklearn.ensemble import GradientBoostingRegressor
+
+model = GradientBoostingRegressor(
+    n_estimators=100,
+    learning_rate=0.1,
+    max_depth=3,
+    random_state=42
+)
+
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+print("MAE :", mean_absolute_error(y_test, y_pred))
+print("MSE :", mean_squared_error(y_test, y_pred))
+print("RMSE:", np.sqrt(mean_squared_error(y_test, y_pred)))
+print("R²  :", r2_score(y_test, y_pred))
+
+print(
+    "Train R²:",
+    r2_score(y_train, model.predict(X_train))
+)
+
+
+for n in [10, 25, 50, 100, 200, 300]:
+
+    model = GradientBoostingRegressor(
+        n_estimators=n,
+        learning_rate=0.1,
+        max_depth=3,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train)
+
+    train_r2 = r2_score(
+        y_train,
+        model.predict(X_train)
+    )
+
+    test_r2 = r2_score(
+        y_test,
+        model.predict(X_test)
+    )
+
+    print(
+        f"Trees={n:3} | "
+        f"Train R²={train_r2:.4f} | "
+        f"Test R²={test_r2:.4f} | "
+        f"Gap={train_r2-test_r2:.4f}"
+    )
