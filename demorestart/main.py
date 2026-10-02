@@ -392,3 +392,90 @@ for n in [10, 25, 50, 100, 200, 300]:
         f"Test R²={test_r2:.4f} | "
         f"Gap={train_r2-test_r2:.4f}"
     )
+
+
+
+print("--"*100)
+print("XgBoost model training and testing")
+print("--"*100)
+
+#Xgboost regression
+
+from xgboost import XGBRegressor
+
+model = XGBRegressor(
+    n_estimators=100,
+    learning_rate=0.05,
+    max_depth=3,
+    random_state=42
+)
+
+model.fit(
+    X_train,
+    y_train
+)
+
+y_pred = model.predict(X_test)
+
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
+
+import numpy as np
+
+mae = mean_absolute_error(y_test, y_pred)
+
+mse = mean_squared_error(y_test, y_pred)
+
+rmse = np.sqrt(mse)
+
+r2 = r2_score(y_test, y_pred)
+
+train_r2 = r2_score(
+    y_train,
+    model.predict(X_train)
+)
+
+print("MAE :", mae)
+print("MSE :", mse)
+print("RMSE:", rmse)
+print("Test R² :", r2)
+print("Train R²:", train_r2)
+print("Gap :", train_r2 - r2)
+
+
+
+from xgboost import XGBRegressor
+from sklearn.metrics import r2_score
+
+learning_rates = [0.01, 0.05, 0.1, 0.2]
+
+for lr in learning_rates:
+
+    model = XGBRegressor(
+        n_estimators=100,
+        learning_rate=lr,
+        max_depth=3,
+        random_state=42
+    )
+
+    model.fit(X_train, y_train)
+
+    train_r2 = r2_score(
+        y_train,
+        model.predict(X_train)
+    )
+
+    test_r2 = r2_score(
+        y_test,
+        model.predict(X_test)
+    )
+
+    print(
+        f"LR={lr:.2f} | "
+        f"Train R²={train_r2:.4f} | "
+        f"Test R²={test_r2:.4f} | "
+        f"Gap={train_r2-test_r2:.4f}"
+    )
