@@ -280,3 +280,159 @@ for epoch in range(100):
             f"Prediction={y_pred.item():.4f}, "
             f"Loss={loss.item():.4f}"
         )
+
+
+
+print("*="*40+"Manual entry of nn")
+print("*="*40)
+
+
+
+#manual thing 
+x = 2
+y = 20
+
+# Hidden layer
+w1 = 1
+w2 = 2
+w3 = 3
+w4 = 4
+
+b1 = 0
+b2 = 0
+b3 = 0
+b4 = 0
+
+# Output layer
+v1 = 1
+v2 = 1
+v3 = 1
+v4 = 1
+
+bout = 0
+
+# Forward propagation
+
+h1 = max(0, w1 * x + b1)
+h2 = max(0, w2 * x + b2)
+h3 = max(0, w3 * x + b3)
+h4 = max(0, w4 * x + b4)
+
+prediction = (
+    h1 * v1 +
+    h2 * v2 +
+    h3 * v3 +
+    h4 * v4 +
+    bout
+)
+
+loss = (y - prediction) ** 2
+
+print("Hidden:", h1, h2, h3, h4)
+print("Prediction:", prediction)
+print("Loss:", loss)
+
+
+
+#pytroch 
+
+import torch
+import torch.nn as nn
+
+x = torch.tensor([[2.0]])
+y = torch.tensor([[20.0]])
+
+model = nn.Sequential(
+    nn.Linear(1,10),
+    nn.ReLU(),
+    nn.Linear(10,1)
+)
+
+
+loss_fn = nn.MSELoss()
+
+
+prediction = model(x)
+
+loss = loss_fn(prediction,y)
+
+
+print("Prediction using pytorch :", prediction)
+print("Loss using pytorch :", loss)
+
+
+optimizer = torch.optim.SGD(
+    model.parameters(),
+    lr=0.01
+)
+
+for epoch in range(100):
+
+
+    optimizer.zero_grad()
+
+
+    prediction = model(x)
+
+
+    loss = loss_fn(prediction,y)
+
+    loss.backward()
+
+
+    optimizer.step()
+
+
+    if epoch%10 == 0:
+        print(
+            f"Epoch {epoch}: "
+            f"Prediction={prediction.item():.4f}, "
+            f"Loss={loss.item():.4f}"
+        )
+print("\nLearned parameters:")
+
+for name, parameter in model.named_parameters():
+    print(name)
+    print(parameter.data)
+
+
+
+for name, parameter in model.named_parameters():
+    print(name, parameter.data)
+
+
+for name, parameter in model.named_parameters():
+    print(name, parameter.grad)
+
+
+
+# import torch
+# import torch.nn as nn
+
+# x = torch.tensor([[2.0]])
+# y = torch.tensor([[20.0]])
+
+# model = nn.Sequential(
+#     nn.Linear(1, 10),
+#     nn.ReLU(),
+#     nn.Linear(10, 1)
+# )
+
+# loss_fn = nn.MSELoss()
+
+# optimizer = torch.optim.SGD(
+#     model.parameters(),
+#     lr=0.01
+# )
+
+# for epoch in range(100):
+
+#     optimizer.zero_grad()
+
+#     prediction = model(x)
+
+#     loss = loss_fn(prediction, y)
+
+#     loss.backward()
+
+#     optimizer.step()
