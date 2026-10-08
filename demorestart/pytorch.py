@@ -449,7 +449,7 @@ x = torch.tensor([
     [2500.0, 5.0, 3.0]
 ])
 
-
+print(x.shape)
 
 y = torch.tensor([
     [50.0],
@@ -459,6 +459,7 @@ y = torch.tensor([
 ])
 
 print(y.shape)
+
 model = nn.Sequential(
     nn.Linear(3,10),
     nn.ReLU(),
@@ -484,8 +485,6 @@ optimizer = torch.optim.SGD(
     lr=0.00001
 )
 
-
-
 for epoch in range(1000):
 
     optimizer.zero_grad()
@@ -496,13 +495,10 @@ for epoch in range(1000):
 
     loss.backward()
 
-
     optimizer.step()
-
 
     if epoch % 100 == 0:
         print(
             f"Epoch {epoch} | "
             f"Loss = {loss.item():.4f}"
         )
-
