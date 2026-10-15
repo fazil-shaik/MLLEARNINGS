@@ -18,6 +18,7 @@ dependencies = [
 members = [
     "streamlit",
     "demo_frontend/venv",
+    "demorestart/rag",
 ]
 
 [tool.uv.sources]

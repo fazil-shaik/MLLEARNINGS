@@ -11,3 +11,5 @@ data
 
 .venv
 .env
+
+chroma_db
