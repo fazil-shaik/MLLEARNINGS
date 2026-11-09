@@ -58,3 +58,62 @@ loss.backward()
 optimizer.step()
 
 print("Loss:", loss.item())
+
+
+
+
+
+import numpy as np
+
+# Step 1: Represent three tokens
+# I = [1, 0]
+# love = [0, 1]
+# ML = [1, 1]
+
+X = np.array([
+    [1.0, 0.0],
+    [0.0, 1.0],
+    [1.0, 1.0]
+])
+
+# Step 2: For this example, use identity projections.
+# Therefore Q = K = V = X.
+
+Q = X
+K = X
+V = X
+
+# Step 3: Calculate attention scores
+d_k = K.shape[1]
+
+scores = Q @ K.T
+
+print("Raw attention scores:")
+print(scores)
+
+# Step 4: Scale the scores
+scaled_scores = scores / np.sqrt(d_k)
+
+print("\nScaled attention scores:")
+print(np.round(scaled_scores, 3))
+
+# Step 5: Calculate softmax
+def softmax(x):
+    x = x - np.max(x, axis=-1, keepdims=True)
+    exp_x = np.exp(x)
+    return exp_x / np.sum(exp_x, axis=-1, keepdims=True)
+
+attention_weights = softmax(scaled_scores)
+
+print("\nAttention weights:")
+print(np.round(attention_weights, 3))
+
+# Step 6: Calculate attention output
+output = attention_weights @ V
+
+print("\nAttention output:")
+print(np.round(output, 3))
+
+# Step 7: Display the result for the first token
+print("\nOutput for token 'I':")
+print(np.round(output[0], 3))
